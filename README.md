@@ -1,12 +1,28 @@
-
-
 ![img](https://static1.thegamerimages.com/wordpress/wp-content/uploads/2021/04/pokemon-auto-chess.jpeg)
 # **Project Proposal: Pokémon Auto Battler Game**
 
 **Intro:**
 **Proposal**: to create a Pokémon-themed auto battler game using vanilla JavaScript. This game will blend the captivating world of Pokémon with the strategic depth of auto battler gameplay. In this game, players will assemble a team of Pokémon and strategically position them on a battlefield to engage in automated battles against both AI-controlled opponents and other players. The goal is to provide an engaging, tactical experience that captures the essence of the Pokémon universe while offering a unique gameplay twist.
 
-**Features:**
+## 🚀Getting Start
+
+```
+npm run build
+```
+
+or
+
+```
+yarn build
+```
+**To run the project:****
+```
+npm run dev
+```
+
+
+
+# Features:
 1. **Turn-Based Gameplay:** The game will feature a turn-based structure where players take actions during their turns, including selecting and positioning Pokémon, using abilities, and managing resources. The automated battles will unfold based on the chosen strategies and Pokémon synergies.
 
 2. **Limited Pokémon Pool:** To encourage strategic thinking and diversity in team compositions, players will have access to a limited pool of Pokémon for each match. This pool will be shared among all players, adding an element of competition as players compete for the same Pokémon.
