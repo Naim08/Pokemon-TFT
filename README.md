@@ -27,6 +27,7 @@ npm run dev
 
 ## Live Site
 
+ https://naim08.github.io/Pokemon-TFT/
 
 
 ## Technologies Used
@@ -35,16 +36,6 @@ npm run dev
 - CSS
 - JavaScript
 - PIXI.js
-
-## Getting Started
-### To get started with the Pokemon battle simulator, follow these steps:
-
-Clone the repository to your local machine.
-Install the dependencies by running ```yarn install``` in your terminal.
-Start the development server by running yarn dev in your terminal.
-Build the production version of the app by running yarn build:prod in your terminal.
-Serve the production version of the app by running yarn serve in your terminal.
-
 
 ## Features
 
