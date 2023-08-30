@@ -40,22 +40,22 @@ The Pokémon Auto Battler Game aims to combine the beloved Pokémon franchise wi
 
 # Functionality & MVP
 
-1. **Basic Game Loop and Turns:**
+* [x] 1. **Basic Game Loop and Turns:**
    Set up the fundamental game loop that manages rounds and turns. Players should be able to take turns selecting and positioning their Pokémon on the battlefield.
 
-2. **Limited Pokémon Selection:**
+* [x] 2. **Limited Pokémon Selection:**
    Implement a basic mechanism for providing players with a limited pool of available Pokémon. This could involve randomly selecting a set of Pokémon for each round from a predefined pool.
 
-3. **Unit Placement and Grid System:**
+* [x] 3. **Unit Placement and Grid System:**
    Create a grid-based battlefield where players can position their Pokémon. Allow players to click on grid cells to place their Pokémon, and ensure that Pokémon can't be placed on occupied cells.
 
-4. **Automated Battles and Damage Calculation:**
+* [x] 4. **Automated Battles and Damage Calculation:**
    Develop the logic for automated battles between players' Pokémon teams and AI-controlled opponents. Calculate damage based on Pokémon stats and types. Display battle outcomes to players.
 
-5. **Basic Pokémon Abilities:**
+* [ ] 5. **Basic Pokémon Abilities:**
    Introduce simple abilities for Pokémon that can affect battles. For instance, a Pokémon might have an ability that increases its attack for a turn or inflicts a status effect on an opponent.
 
-6. **Win/Loss Condition and Restart:**
+* [x] 6. **Win/Loss Condition and Restart:**
    Implement a win/loss condition that determines the outcome of battles. Display a victory or defeat message to players, and allow them to restart or continue to the next round.
 
 **Bonus Features:**

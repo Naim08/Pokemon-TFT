@@ -162,7 +162,7 @@ class Board {
 
           sprite.zIndex = 0;
           const graphics = new PIXI.Graphics();
-          graphics.lineStyle(2, 0xff0000, 1);
+          graphics.lineStyle(2, 0xe4c0be, 1);
           console.log(sprite.x, sprite.y);
           graphics.drawRect(sprite.x, sprite.y, tileSize, tileSize);
           this.boardContainer.addChild(graphics);

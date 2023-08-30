@@ -17,7 +17,10 @@ import Pokemon from "./game/pokemon";
 import Player from "./game/player";
 import Game from "./game/game";
 const pokemonImages = {};
+import faviconLink from "./assets/favicon.png";
 
+const favicon = document.querySelector('link[rel="icon"]');
+favicon.href = faviconLink;
 function importAll(r) {
   r.keys().forEach((key) => {
     pokemonImages[key] = r(key);

@@ -42,6 +42,7 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
+      favicon: "./src/assets/favicon.ico",
     }),
 
     new MiniCssExtractPlugin(),
@@ -51,6 +52,7 @@ const config = {
           from: "./src/assets",
           to: "assets",
         },
+        { from: "./src/assets/favicon.ico" },
       ],
     }),
     // Add your plugins here
@@ -71,7 +73,7 @@ const config = {
         use: [stylesHandler, "css-loader", "stylus-loader"],
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|json)$/i,
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|json|ico)$/i,
         type: "asset",
       },
 

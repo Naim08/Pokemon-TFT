@@ -66,7 +66,7 @@ class Pokemon extends PIXI.Container {
     const healthBarY = this.animate.healthBarTooltip.y; // Store the y position of the health bar
     console.log(healthBarWidth);
     this.animate.healthBarTooltip.clear();
-    this.animate.healthBarTooltip.beginFill(0x96c291);
+    this.animate.healthBarTooltip.beginFill(0x3a5a40);
     this.animate.healthBarTooltip.drawRect(0, 0, healthBarWidth, 5);
     this.animate.healthBarTooltip.endFill();
     this.animate.healthBarTooltip.x = healthBarX; // Set the x position of the health bar to the stored value

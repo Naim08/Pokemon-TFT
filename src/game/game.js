@@ -17,6 +17,9 @@ import Pokemon from "./pokemon";
 import Player from "./player";
 
 class Game {
+  static TINT = 0x8ca8be;
+  static POKEMON_TINT = 0xf0eae0;
+  static TEXT_COLOR = 0x315098;
   constructor(app) {
     this.loadingContainer = new PIXI.Container();
     this.boardContainer = new PIXI.Container();
@@ -41,14 +44,14 @@ class Game {
 
   async loadLoadingScreen() {
     const background = new PIXI.Graphics();
-    background.beginFill(0x4682a9);
+    background.beginFill(Game.TINT);
     background.drawRect(0, 0, this.app.screen.width, this.app.screen.height);
     background.endFill();
     this.loadingContainer.addChild(background);
 
     const style = new PIXI.TextStyle({
       fontSize: 24,
-      fill: "white",
+      fill: Game.TEXT_COLOR,
     });
 
     const loadingText = new PIXI.Text("Loading...", style);
@@ -79,7 +82,7 @@ class Game {
     this.menuContainer.addChild(title);
 
     let closeButton = new PIXI.Graphics();
-    closeButton.beginFill(0xf94c10);
+    closeButton.beginFill(Game.TEXT_COLOR);
     closeButton.drawRect(0, 0, 50, 50);
     closeButton.endFill();
     closeButton.interactive = true;
@@ -173,7 +176,7 @@ class Game {
     const rect = new PIXI.Rectangle(0, 0, 300, 100);
 
     box.lineStyle(2, 0x000000, 1); // Add a black border with a thickness of 2 pixels
-    box.beginFill(0xff0000);
+    box.beginFill(0x8ca8be);
     box.drawRect(rect.x, rect.y, rect.width, rect.height);
     box.endFill();
     let selectedPokemon = null;
@@ -298,11 +301,11 @@ class Game {
       // Remove the health bar tooltip from the previously selected Pokemon
     }
 
-    pokemon.animate.animatedSprite.idle.tint = 0xff0000;
+    pokemon.animate.animatedSprite.idle.tint = Game.POKEMON_TINT;
     if (!pokemon.animate.healthBarTooltip) {
       const width = (pokemon.currentHP / pokemon.maxHP) * 50;
       const healthBarTooltip = new PIXI.Graphics();
-      healthBarTooltip.beginFill(0x96c291);
+      healthBarTooltip.beginFill(0x3a5a40);
       healthBarTooltip.drawRect(0, 0, width, 5);
       healthBarTooltip.endFill();
 
@@ -486,13 +489,22 @@ class Game {
 
   startFightButton() {
     // Create a new button object
-    const button = new PIXI.Text("Start Fight", { fill: "white" });
+    const button = new PIXI.Text("Start Fight", { fill: Game.TEXT_COLOR });
     button.x = this.app.screen.width - 100;
     button.y = this.app.screen.height - 50;
     button.anchor.set(0.5);
     button.interactive = true;
     button.buttonMode = true;
 
+    const buttonBox = new PIXI.Graphics();
+    buttonBox.beginFill(Game.POKEMON_TINT);
+    buttonBox.drawRect(
+      button.x - button.width / 2 - 10,
+      button.y - button.height / 2 - 5,
+      button.width + 20,
+      button.height + 10
+    );
+    buttonBox.endFill();
     // Add an event listener to the button
     button.on("click", () => {
       // Disable interactivity of Pokemon objects on the board
@@ -505,7 +517,7 @@ class Game {
       // Start the fight
       this.fight();
     });
-
+    this.app.stage.addChild(buttonBox);
     // Add the button to the stage
     this.app.stage.addChild(button);
   }
