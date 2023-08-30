@@ -188,8 +188,6 @@ In this example, the `mask8bits` method of the `Masker` class calculates the mas
 Plays sound depennding stage in the game
 ## Future Directions
 
-- Implement more Pokemon options
-- Add sound effects to the battle
-- Allow players to save their progress
+- Allow online play
 
 Make sure to allot enough time to write your README and use proper Markdown formatting. You can refer to the links provided in the prompt for helpful resources on Markdown syntax and examples of great READMEs.
