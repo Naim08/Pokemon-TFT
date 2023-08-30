@@ -15,6 +15,24 @@ const config = {
     path: path.resolve(__dirname, "dist"),
     filename: "main.[contenthash].js",
   },
+  optimization: {
+    minimize: false,
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendor",
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
+  },
+  resolve: {
+    fallback: {
+      util: require.resolve("util/"),
+    },
+  },
   devServer: {
     open: true,
     host: "localhost",
@@ -44,7 +62,7 @@ const config = {
         use: [stylesHandler, "css-loader", "stylus-loader"],
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|json)$/i,
         type: "asset",
       },
 

@@ -29,6 +29,11 @@
     "dev": "webpack serve --mode=development --open"
   },
   "dependencies": {
-    "pixi.js": "^7.2.4"
+    "@datastructures-js/priority-queue": "^6.3.0",
+    "jimp": "^0.22.10",
+    "pixi-spine": "^4.0.4",
+    "pixi-tween": "^0.2.0",
+    "pixi.js": "^7.2.4",
+    "util": "^0.12.5"
   }
 }
