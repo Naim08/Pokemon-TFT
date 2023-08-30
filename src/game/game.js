@@ -229,7 +229,6 @@ class Game {
       pokemon.animate.animatedSprite.idle.buttonMode = true;
       pokemon.animate.animatedSprite.idle.on("click", () => {
         this.board.selectedPokemon = pokemon;
-        this.selectedPokemon = pokemon;
 
         this.selectPokemon(pokemon);
       });
@@ -268,7 +267,6 @@ class Game {
       pokemon.animate.animatedSprite.idle.buttonMode = true;
       pokemon.animate.animatedSprite.idle.on("click", () => {
         this.board.selectedPokemon = pokemon;
-        this.selectedPokemon = pokemon;
 
         this.selectPokemon(pokemon);
       });
@@ -278,7 +276,7 @@ class Game {
         const remainingPokemons = pokemon.player.boardPokemon;
         if (remainingPokemons.length === 0) {
           // End the game if the player has no remaining boardPokemons
-          this.game.winnner = player;
+          this.winner = player;
           this.endGame();
         }
         console.log("dead", player);
@@ -286,8 +284,17 @@ class Game {
     }
   }
   selectPokemon(pokemon) {
-    if (pokemon) {
-      pokemon.animate.animatedSprite.idle.tint = 0xffffff;
+    console.log("selectedPokemon", this.selectedPokemon);
+    if (this.selectedPokemon) {
+      if (this.selectedPokemon === pokemon) {
+        this.selectedPokemon.animate.animatedSprite.idle.tint = 0xffffff;
+        if (this.selectedPokemon.animate.healthBarTooltip) {
+          this.selectedPokemon.animate.healthBarTooltip.visible = false;
+        }
+        this.selectedPokemon = null;
+        return;
+      }
+
       // Remove the health bar tooltip from the previously selected Pokemon
     }
 
@@ -295,7 +302,7 @@ class Game {
     if (!pokemon.animate.healthBarTooltip) {
       const width = (pokemon.currentHP / pokemon.maxHP) * 50;
       const healthBarTooltip = new PIXI.Graphics();
-      healthBarTooltip.beginFill(0x191d88);
+      healthBarTooltip.beginFill(0x96c291);
       healthBarTooltip.drawRect(0, 0, width, 5);
       healthBarTooltip.endFill();
 
@@ -308,6 +315,7 @@ class Game {
     } else {
       return !pokemon.animate.healthBarTooltip.visible;
     }
+    this.selectedPokemon = pokemon;
   }
   gameLoop(delta) {
     // Create a container for the health bars
@@ -595,11 +603,16 @@ class Game {
   }
   getRandomPokemonNames(allPokemonNames, numPokemon) {
     const pokemonNames = [];
+    const allPokemonNamesOnlyLetters = allPokemonNames.filter((name) =>
+      /^[a-zA-Z]+$/.test(name)
+    );
 
     // Generate 6 random Pokemon names
     while (pokemonNames.length < numPokemon) {
-      const randomIndex = Math.floor(Math.random() * allPokemonNames.length);
-      const randomName = allPokemonNames[randomIndex];
+      const randomIndex = Math.floor(
+        Math.random() * allPokemonNamesOnlyLetters.length
+      );
+      const randomName = allPokemonNamesOnlyLetters[randomIndex];
 
       // Add the Pokemon name to the array if it doesn't already exist
       if (!pokemonNames.includes(randomName)) {
