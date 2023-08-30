@@ -5,6 +5,9 @@ import Tile from "../tile";
 import Pokemon from "./pokemon";
 import { PriorityQueue } from "@datastructures-js/priority-queue";
 
+import loadSVG from "../assets/refresh.svg";
+import loadSceneBackground from "../assets/newBackground.png";
+import background1 from "../assets/back1.png";
 class Board {
   constructor(
     numRows,
@@ -33,46 +36,32 @@ class Board {
 
   async initialize(app) {
     const preLoadContainer = new PIXI.Container();
-    const preLoadText = new PIXI.Text("Loading...", {
-      fontSize: 24,
-      fill: 0xffffff,
+    const background = PIXI.Sprite.from(loadSceneBackground);
+    background.width = app.view.width;
+    background.height = app.view.height;
+    preLoadContainer.addChild(background);
+
+    // Create a new sprite from the loading SVG file
+    const loadingSprite = PIXI.Sprite.from(loadSVG);
+    loadingSprite.position.set(app.screen.width / 2, app.screen.height / 2);
+    loadingSprite.anchor.set(0.5);
+    loadingSprite.scale.set(0.5);
+
+    preLoadContainer.addChild(loadingSprite);
+    app.ticker.add(() => {
+      loadingSprite.rotation += 0.1;
     });
-    preLoadText.anchor.set(0.5);
-    preLoadText.x = app.view.width / 2;
-    preLoadText.y = app.view.height / 2;
-    preLoadContainer.addChild(preLoadText);
-    const preLoadAnimation = new PIXI.Graphics();
-    preLoadAnimation.lineStyle(4, 0xffffff);
-    preLoadAnimation.arc(
-      app.view.width / 2,
-      app.view.height / 2,
-      20,
-      0,
-      Math.PI / 2
-    );
-    preLoadAnimation.endFill();
-    preLoadContainer.addChild(preLoadAnimation);
 
     app.stage.addChild(preLoadContainer);
 
     const tileset = new Tileset(tilesetMap, 25);
-    let angle = 0;
-    app.ticker.add(() => {
-      angle += 0.4;
-      preLoadAnimation.clear();
-      preLoadAnimation.lineStyle(4, 0xffffff);
-      preLoadAnimation.arc(
-        app.view.width / 2,
-        app.view.height / 2,
-        20,
-        0,
-        angle
-      );
-      preLoadAnimation.endFill();
-    });
 
     await tileset.initialize().then(async () => {
-      preLoadContainer.visible = false;
+      app.stage.removeChild(preLoadContainer);
+      const background = PIXI.Sprite.from(background1);
+      background.width = app.screen.width;
+      background.height = app.screen.height;
+      app.stage.addChild(background);
 
       const numRows = this.numRows;
       const numCols = this.numCols;
@@ -343,6 +332,14 @@ class Board {
     }
     pokemon.player.boardPokemon.push(pokemon);
     tile.hasPokemon = true;
+  }
+  set(row, col, value) {
+    this.board[row][col] = value;
+  }
+
+  // Define the get method for the [] operator
+  get(row, col) {
+    return this.board[row][col];
   }
 }
 

@@ -73,7 +73,7 @@ const config = {
         use: [stylesHandler, "css-loader", "stylus-loader"],
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|json|ico)$/i,
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|json|ico|mp3)$/i,
         type: "asset",
       },
 

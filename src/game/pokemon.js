@@ -20,6 +20,7 @@ class Pokemon extends PIXI.Container {
     this.isAlive = true;
     this.lastAttackTime = 0;
     this.emit = new PIXI.utils.EventEmitter();
+    this.isFight = false;
   }
 
   takeDamage(damage) {
@@ -31,29 +32,33 @@ class Pokemon extends PIXI.Container {
     }
   }
   attackPokemon(target) {
-    const damage = this.attack;
+    this.isFight = true;
+    this.attackInterval = setInterval(() => {
+      const damage = this.attack;
 
-    console.log("can attacks");
-    target.currentHP -= damage;
-    console.log(target.currentHP);
-    if (target.currentHP <= 0) {
-      target.currentHP = 0;
-      if (!target.isAlive) return damage; // If the target is already dead, return the damage dealt
-      target.isAlive = false;
-      const index = target.player.boardPokemon.indexOf(target);
-      if (index !== -1) {
-        target.player.boardPokemon.splice(index, 1);
+      console.log("can attacks");
+      target.currentHP -= damage;
+      console.log(target.currentHP);
+
+      if (target.currentHP <= 0) {
+        target.currentHP = 0;
+        if (!target.isAlive) return damage; // If the target is already dead, return the damage dealt
+        target.isAlive = false;
+        const index = target.player.boardPokemon.indexOf(target);
+        if (index !== -1) {
+          target.player.boardPokemon.splice(index, 1);
+        }
+        this.player.score += 1;
+        target.animate.animatedSprite.idle.emit("Dead", this.player);
+        target.animate.animatedSprite.idle.destroy();
+        target.x = null;
+        target.y = null;
+        this.isFight = false;
+        target.isFight = false;
+        console.log(damage);
       }
-      this.player.score += 1;
-      target.animate.animatedSprite.idle.emit("Dead", this.player);
-      target.animate.animatedSprite.idle.destroy();
-      target.x = null;
-      target.y = null;
-
-      console.log(damage);
-    }
-
-    return damage;
+      this.updateHealthBar();
+    }, 3000);
   }
 
   setCurrentHP(hp) {
@@ -66,7 +71,7 @@ class Pokemon extends PIXI.Container {
     const healthBarY = this.animate.healthBarTooltip.y; // Store the y position of the health bar
     console.log(healthBarWidth);
     this.animate.healthBarTooltip.clear();
-    this.animate.healthBarTooltip.beginFill(0x3a5a40);
+    this.animate.healthBarTooltip.beginFill(0x9b2226);
     this.animate.healthBarTooltip.drawRect(0, 0, healthBarWidth, 5);
     this.animate.healthBarTooltip.endFill();
     this.animate.healthBarTooltip.x = healthBarX; // Set the x position of the health bar to the stored value

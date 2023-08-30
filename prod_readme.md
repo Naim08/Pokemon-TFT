@@ -6,7 +6,7 @@ This is a Pokemon battle simulator that allows players to choose their own Pokem
 
 ## Live Site
 
-Link to the live site.
+
 
 ## Technologies Used
 
@@ -19,7 +19,7 @@ Link to the live site.
 ### To get started with the Pokemon battle simulator, follow these steps:
 
 Clone the repository to your local machine.
-Install the dependencies by running yarn install in your terminal.
+Install the dependencies by running ```yarn install``` in your terminal.
 Start the development server by running yarn dev in your terminal.
 Build the production version of the app by running yarn build:prod in your terminal.
 Serve the production version of the app by running yarn serve in your terminal.
@@ -170,6 +170,10 @@ export class Masker {
 In this example, the `mask8bits` method of the `Masker` class calculates the mask value based on the surrounding values in the matrix and returns the corresponding mask type using the `IdTable` object.
 
 ![img](./src/assets/tile-sheet-example.png)
+
+## Sound
+
+Plays sound depennding stage in the game
 ## Future Directions
 
 - Implement more Pokemon options

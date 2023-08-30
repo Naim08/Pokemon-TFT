@@ -15,11 +15,20 @@ import { PokeAnimation } from "../model/pokemon_animation";
 import Board from "./board";
 import Pokemon from "./pokemon";
 import Player from "./player";
+import loadSVG from "../assets/refresh.svg";
+import loadSceneBackground from "../assets/newBackground.png";
+import background1 from "../assets/back1.png";
+import background2 from "../assets/back2.png";
+import { Sound, sound } from "@pixi/sound";
+import startingAudio from "../assets/opening.mp3";
+import battle from "../assets/pokemon-battle.mp3";
+import lavender from "../assets/lavender.mp3";
+import logoPng from "../assets/colyseus-icon.png";
 
 class Game {
   static TINT = 0x8ca8be;
   static POKEMON_TINT = 0xf0eae0;
-  static TEXT_COLOR = 0x315098;
+  static TEXT_COLOR = 0xe5ff9e;
   constructor(app) {
     this.loadingContainer = new PIXI.Container();
     this.boardContainer = new PIXI.Container();
@@ -31,8 +40,13 @@ class Game {
     this.board = null;
     this.lastAttackTime = 0;
     this.winner = null;
-    this.startFightButton();
     this.allPokemonNames = allPokemonNames;
+    this.sound = sound;
+    this.sound.add({
+      startingAudio: startingAudio,
+      battle: battle,
+      lavender: lavender,
+    });
   }
 
   async load() {
@@ -43,92 +57,79 @@ class Game {
   }
 
   async loadLoadingScreen() {
-    const background = new PIXI.Graphics();
-    background.beginFill(Game.TINT);
-    background.drawRect(0, 0, this.app.screen.width, this.app.screen.height);
-    background.endFill();
-    this.loadingContainer.addChild(background);
+    this.sound.play("startingAudio");
+    const newBackground = PIXI.Sprite.from(loadSceneBackground);
+    newBackground.width = this.app.screen.width;
+    newBackground.height = this.app.screen.height;
+    this.loadingContainer.addChild(newBackground);
 
     const style = new PIXI.TextStyle({
       fontSize: 24,
       fill: Game.TEXT_COLOR,
     });
+    const refreshSprite = PIXI.Sprite.from(loadSVG);
+    // Set the position and scale of the sprite
+    refreshSprite.position.set(
+      this.app.screen.width / 2,
+      this.app.screen.height / 2
+    );
+    refreshSprite.anchor.set(0.5);
+    refreshSprite.scale.set(0.5);
 
-    const loadingText = new PIXI.Text("Loading...", style);
-    loadingText.x = this.app.screen.width / 2 - loadingText.width / 2;
-    loadingText.y = this.app.screen.height / 2 - loadingText.height / 2;
-    this.loadingContainer.addChild(loadingText);
-
+    // Add the sprite to the loading container
+    this.loadingContainer.addChild(refreshSprite);
+    this.app.ticker.add(() => {
+      refreshSprite.rotation += 0.1;
+    });
     this.app.stage.addChild(this.loadingContainer);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     this.app.stage.removeChild(this.loadingContainer);
   }
 
   async loadMenu() {
-    const background = new PIXI.Graphics();
-    background.beginFill(0xc7004d);
-    background.drawRect(0, 0, this.app.screen.width, this.app.screen.height);
-    background.endFill();
+    const background = PIXI.Sprite.from(background2);
+    background.width = this.app.screen.width;
+    background.height = this.app.screen.height;
+
     this.menuContainer.addChild(background);
 
-    const style = new PIXI.TextStyle({
-      fontSize: 24,
-      fill: "white",
+    const titleStyle = new PIXI.TextStyle({
+      fontSize: 48,
+      fill: Game.TEXT_COLOR,
     });
+    const logo = PIXI.Sprite.from(logoPng);
+    logo.anchor.set(0.5);
+    logo.x = this.app.screen.width / 2 - logo.width / 2;
+    logo.y = 100;
+    logo.scale.set(0.5);
+    this.menuContainer.addChild(logo);
 
-    const title = new PIXI.Text("Pokemon Menu", style);
-    title.x = this.app.screen.width / 2 - title.width / 2;
-    title.y = 50;
+    const title = new PIXI.Text("Pokemon AutoBattle", titleStyle);
+    title.x = logo.x + logo.width / 2 - title.width / 2;
+    title.y = logo.y + logo.height + 100;
+
     this.menuContainer.addChild(title);
 
-    let closeButton = new PIXI.Graphics();
-    closeButton.beginFill(Game.TEXT_COLOR);
-    closeButton.drawRect(0, 0, 50, 50);
-    closeButton.endFill();
-    closeButton.interactive = true;
-    closeButton.buttonMode = true;
-    closeButton.x = this.app.screen.width - 60;
-    closeButton.y = 10;
-    closeButton = new PIXI.Sprite(closeButton.texture);
-
-    closeButton.on("click", () => {
-      this.toggleMenu();
-    });
-    this.menuContainer.addChild(closeButton);
-
-    const closeButtonText = new PIXI.Text("X", style);
-    closeButtonText.x =
-      closeButton.x + closeButton.width / 2 - closeButtonText.width / 2;
-    closeButtonText.y =
-      closeButton.y + closeButton.height / 2 - closeButtonText.height / 2;
-    this.menuContainer.addChild(closeButtonText);
-
-    const pokemonListButton = new PIXI.Graphics();
-    pokemonListButton.beginFill(0x749bc2);
-    pokemonListButton.drawRect(0, 0, 200, 50);
-    pokemonListButton.endFill();
-    pokemonListButton.interactive = true;
-    pokemonListButton.buttonMode = true;
-    pokemonListButton.x =
-      this.app.screen.width / 2 - pokemonListButton.width / 2;
-    pokemonListButton.y = 150;
-    pokemonListButton.on("click", () => {
+    const startButton = new PIXI.Graphics();
+    startButton.beginFill(0x2d82b7);
+    startButton.drawRect(0, 0, 300, 100);
+    startButton.endFill();
+    startButton.x = logo.x + logo.width - 120;
+    startButton.y = logo.y + logo.height + 300;
+    startButton.interactive = true;
+    startButton.buttonMode = true;
+    startButton.on("pointerdown", () => {
       this.startGame();
     });
-    this.menuContainer.addChild(pokemonListButton);
+    this.menuContainer.addChild(startButton);
 
-    const pokemonListButtonText = new PIXI.Text("Start Game", style);
-    pokemonListButtonText.x =
-      pokemonListButton.x +
-      pokemonListButton.width / 2 -
-      pokemonListButtonText.width / 2;
-    pokemonListButtonText.y =
-      pokemonListButton.y +
-      pokemonListButton.height / 2 -
-      pokemonListButtonText.height / 2;
-    this.menuContainer.addChild(pokemonListButtonText);
+    const startButtonText = new PIXI.Text("Start Game", titleStyle);
+    startButtonText.x =
+      startButton.x + startButton.width / 2 - startButtonText.width / 2;
+    startButtonText.y =
+      startButton.y + startButton.height / 2 - startButtonText.height / 2;
+    this.menuContainer.addChild(startButtonText);
 
-    this.menuContainer.visible = false;
     this.boardContainer.addChild(this.menuContainer);
   }
 
@@ -153,7 +154,7 @@ class Game {
       this.boardContainer
     );
     await this.board.initialize(this.app);
-
+    // \
     // Add event listeners to each tile
     for (let row = 0; row < this.board.numRows; row++) {
       for (let col = 0; col < this.board.numCols; col++) {
@@ -168,13 +169,15 @@ class Game {
         });
       }
     }
+    this.sound.pause("startingAudio");
+    this.sound.play("lavender");
 
     const playerA = new Player("John Wick", 0);
     const playerB = new Player("Hillary", 1);
 
     const box = new PIXI.Graphics();
     const rect = new PIXI.Rectangle(0, 0, 300, 100);
-
+    this.startFightButton();
     box.lineStyle(2, 0x000000, 1); // Add a black border with a thickness of 2 pixels
     box.beginFill(0x8ca8be);
     box.drawRect(rect.x, rect.y, rect.width, rect.height);
@@ -236,6 +239,7 @@ class Game {
         this.selectPokemon(pokemon);
       });
       pokemon.animate.animatedSprite.idle.on("Dead", (player) => {
+        clearInterval(pokemon.attackInterval);
         console.log(player, pokemon.player);
         player.player2ScoreText.text = `Score: ${player.score}`;
         const remainingPokemons = pokemon.player.boardPokemon;
@@ -274,6 +278,7 @@ class Game {
         this.selectPokemon(pokemon);
       });
       pokemon.animate.animatedSprite.idle.on("Dead", (player) => {
+        clearInterval(pokemon.attackInterval);
         console.log(player, pokemon.player);
         player.player1ScoreText.text = `Score: ${player.score}`;
         const remainingPokemons = pokemon.player.boardPokemon;
@@ -305,7 +310,7 @@ class Game {
     if (!pokemon.animate.healthBarTooltip) {
       const width = (pokemon.currentHP / pokemon.maxHP) * 50;
       const healthBarTooltip = new PIXI.Graphics();
-      healthBarTooltip.beginFill(0x3a5a40);
+      healthBarTooltip.beginFill(0x9b2226);
       healthBarTooltip.drawRect(0, 0, width, 5);
       healthBarTooltip.endFill();
 
@@ -359,6 +364,11 @@ class Game {
         // change size of health bar
         selectedPokemon.updateHealthBar();
         adjacentPokemon.updateHealthBar();
+        if (!selectedPokemon.isAlive || !adjacentPokemon.isAlive) {
+          clearInterval(selectedPokemon.attackInterval);
+          clearInterval(adjacentPokemon.attackInterval);
+          return;
+        }
         this.lastAttackTime = currentTime;
       }
     }
@@ -432,6 +442,7 @@ class Game {
       // End the game
       this.quitGame();
     });
+    git;
     endGameButton.y = 50;
     menu.addChild(endGameButton);
   }
@@ -489,7 +500,7 @@ class Game {
 
   startFightButton() {
     // Create a new button object
-    const button = new PIXI.Text("Start Fight", { fill: Game.TEXT_COLOR });
+    const button = new PIXI.Text("Start Fight", { fill: "0x03045e" });
     button.x = this.app.screen.width - 100;
     button.y = this.app.screen.height - 50;
     button.anchor.set(0.5);
@@ -516,6 +527,7 @@ class Game {
 
       // Start the fight
       this.fight();
+      button.visible = false;
     });
     this.app.stage.addChild(buttonBox);
     // Add the button to the stage
@@ -523,89 +535,42 @@ class Game {
   }
 
   fight() {
+    console.log("fight");
     // Update the game state and animate the Pokemon objects
     const animate = () => {
       // Iterate over each Pokemon on the board
-      for (let row = 0; row < this.board.length; row++) {
-        for (let col = 0; col < this.board[row].length; col++) {
-          const pokemon = this.board[row][col];
+      const boardArr = this.board.board;
+      for (let row = 0; row < boardArr[0].length; row++) {
+        for (let col = 0; col < boardArr[row].length; col++) {
+          const pokemon = boardArr[row][col];
 
-          // Check if the Pokemon is from the current player
-          if (pokemon.player !== this.turn) {
+          // check if pokemon is undefined
+          if (pokemon === undefined) {
+            continue;
+          }
+          if (pokemon.isFight) {
             continue;
           }
 
           // Check if the Pokemon is adjacent to any Pokemon from the opposing player
-          const adjacentPokemon = this.getAdjacentPokemon(row, col);
-          for (let i = 0; i < adjacentPokemon.length; i++) {
-            const adjacent = adjacentPokemon[i];
-
-            if (adjacent.player !== this.turn) {
-              // Attack the adjacent Pokemon
-              pokemon.attack(adjacent);
-
-              // Check if the adjacent Pokemon fainted
-              if (adjacent.hp <= 0) {
-                // Remove the adjacent Pokemon from the board
-                this.removePokemon(adjacent);
-
-                // Check if the current player won
-                if (this.checkWin()) {
-                  // Show the winner message
-                  const message = new PIXI.Text(`Player ${this.turn} wins!`, {
-                    fill: "white",
-                    fontSize: 48,
-                  });
-                  message.anchor.set(0.5);
-                  message.x = this.app.screen.width / 2;
-                  message.y = this.app.screen.height / 2;
-                  this.menuContainer.addChild(message);
-
-                  // Show the start again button
-                  const startAgainButton = new PIXI.Text("Start Again", {
-                    fill: "white",
-                  });
-                  startAgainButton.anchor.set(0.5);
-                  startAgainButton.interactive = true;
-                  startAgainButton.buttonMode = true;
-                  startAgainButton.on("click", async () => {
-                    // Restart the game
-                    await this.restartGame();
-
-                    // Hide the menu scene
-                    this.menuContainer.visible = false;
-                  });
-                  startAgainButton.y = 100;
-                  this.menuContainer.addChild(startAgainButton);
-
-                  // Show the end game button
-                  const endGameButton = new PIXI.Text("End Game", {
-                    fill: "white",
-                  });
-                  endGameButton.anchor.set(0.5);
-                  endGameButton.interactive = true;
-                  endGameButton.buttonMode = true;
-                  endGameButton.on("click", () => {
-                    // End the game
-                    this.quitGame();
-                  });
-                  endGameButton.y = 50;
-                  this.menuContainer.addChild(endGameButton);
-
-                  // Show the menu scene
-                  this.menuContainer.visible = true;
-
-                  return;
-                }
-              }
-            }
+          const adjacentPokemon = this.board.getAdjacentPokemon(pokemon);
+          if (adjacentPokemon.isFight) {
+            continue;
           }
+          if (!pokemon.isAlive || !adjacentPokemon.isAlive) {
+            clearInterval(pokemon.attackInterval);
+            clearInterval(adjacentPokemon.attackInterval);
+            return;
+          }
+
+          pokemon.attackPokemon(adjacentPokemon);
+
+          adjacentPokemon.attackPokemon(pokemon);
+
+          console.log("adjacentPokemon", adjacentPokemon);
+          console.log("pokemon", pokemon);
         }
       }
-
-      // Switch the turn to the opponent
-      this.turn = this.turn === "player" ? "opponent" : "player";
-
       // Request the next animation frame
       requestAnimationFrame(animate);
     };
@@ -613,6 +578,7 @@ class Game {
     // Request the first animation frame
     requestAnimationFrame(animate);
   }
+
   getRandomPokemonNames(allPokemonNames, numPokemon) {
     const pokemonNames = [];
     const allPokemonNamesOnlyLetters = allPokemonNames.filter((name) =>
@@ -633,6 +599,15 @@ class Game {
     }
 
     return pokemonNames;
+  }
+  stopFights() {
+    // Iterate over the fight intervals and clear them
+    for (const fight of this.fightIntervals) {
+      clearInterval(fight.intervalId);
+    }
+
+    // Clear the fight intervals array
+    this.fightIntervals = [];
   }
 }
 

@@ -30,8 +30,9 @@
   },
   "dependencies": {
     "@datastructures-js/priority-queue": "^6.3.0",
+    "@pixi/sound": "^5.2.1",
     "copy-webpack-plugin": "^11.0.0",
-    "jimp": "^0.22.10",
+    "jimp": "^0.3.5",
     "pixi-spine": "^4.0.4",
     "pixi-tween": "^0.2.0",
     "pixi.js": "^7.2.4",

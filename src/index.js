@@ -17,7 +17,7 @@ import Pokemon from "./game/pokemon";
 import Player from "./game/player";
 import Game from "./game/game";
 const pokemonImages = {};
-import faviconLink from "./assets/favicon.png";
+import faviconLink from "./assets/favicon.ico";
 
 const favicon = document.querySelector('link[rel="icon"]');
 favicon.href = faviconLink;
