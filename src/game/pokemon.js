@@ -58,6 +58,7 @@ class Pokemon extends PIXI.Container {
         console.log(damage);
       }
       this.updateHealthBar();
+      target.updateHealthBar();
     }, 3000);
   }
 

@@ -40,6 +40,7 @@ class Game {
     this.board = null;
     this.lastAttackTime = 0;
     this.winner = null;
+    this.gameEnd = false;
     this.allPokemonNames = allPokemonNames;
     this.sound = sound;
     this.sound.add({
@@ -221,7 +222,6 @@ class Game {
   }
 
   async loadPokemonAnimationsForPlayerA(selectedPokemon, player) {
-    //const pokemonNames = ["abra", "bulbasaur", "alakazam", "darkrai", "crobat"];
     const pokemonNames = this.getRandomPokemonNames(this.allPokemonNames, 6);
     const pokemons = [];
     for (let i = 0; i < pokemonNames.length; i++) {
@@ -246,20 +246,13 @@ class Game {
         if (remainingPokemons.length === 0) {
           // End the game if the player has no remaining boardPokemons
           this.winner = player;
-          this.endGame();
+          //  this.endGame();
         }
         console.log("dead", player);
       });
     }
   }
   async loadPokemonAnimationsForPlayerB(selectedPokemon, player) {
-    // const pokemonNames = [
-    //   "garchomp",
-    //   "gengar",
-    //   "vikavolt",
-    //   "tyranitar",
-    //   "kakuna",
-    // ];
     const pokemonNames = this.getRandomPokemonNames(this.allPokemonNames, 6);
     const pokemons = [];
     for (let i = 0; i < pokemonNames.length; i++) {
@@ -285,7 +278,7 @@ class Game {
         if (remainingPokemons.length === 0) {
           // End the game if the player has no remaining boardPokemons
           this.winner = player;
-          this.endGame();
+          //this.endGame();
         }
         console.log("dead", player);
       });
@@ -553,7 +546,8 @@ class Game {
           }
 
           // Check if the Pokemon is adjacent to any Pokemon from the opposing player
-          const adjacentPokemon = this.board.getAdjacentPokemons(pokemon);
+          const adjacentPokemon = this.board.getAdjacentPokemons(pokemon)[0];
+
           if (!adjacentPokemon) {
             continue;
           }
@@ -579,6 +573,7 @@ class Game {
     };
 
     // Request the first animation frame
+
     requestAnimationFrame(animate);
   }
 
