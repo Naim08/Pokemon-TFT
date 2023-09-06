@@ -27,7 +27,10 @@ class Board {
     this.boardContainer = boardContainer;
     this.tileclass = [];
     this.app = app;
-    this.board = Array.from(Array(numCols), () => new Array(numRows));
+    this.board = Array.from(Array(numRows), () =>
+      new Array(numCols).fill(null)
+    );
+
     this.selectedPokemon = null;
     this.ticker = new PIXI.Ticker();
     this.player1Pokemon = [];
@@ -108,8 +111,7 @@ class Board {
                 this.selectedTile.y
               );
               if (
-                this.board[this.selectedTile.x][this.selectedTile.y] ===
-                undefined
+                this.board[this.selectedTile.x][this.selectedTile.y] === null
               ) {
                 const healthBarTooltip =
                   this.selectedPokemon.animate.healthBarTooltip;
@@ -129,7 +131,7 @@ class Board {
               if (this.selectedPokemon.tile) {
                 const tileX = this.selectedPokemon.tile.x;
                 const tileY = this.selectedPokemon.tile.y;
-                this.board[tileX][tileY] = undefined;
+                this.board[tileX][tileY] = null;
                 const healthBarTooltip =
                   this.selectedPokemon.animate.healthBarTooltip;
                 healthBarTooltip.visible = true;
@@ -190,6 +192,8 @@ class Board {
     pokemon.animate.animatedSprite.idle.y = y;
     this.board[coords.x][coords.y] = pokemon;
     this.boardContainer.addChild(pokemon.animate.animatedSprite.idle);
+    pokemon.animate.animatedSprite.idle.interactive = true;
+    pokemon.animate.animatedSprite.idle.buttonMode = true;
   }
 
   getTileCoordinates(x, y) {
@@ -197,7 +201,7 @@ class Board {
   }
   isOccupied(coords) {
     const { x, y } = coords;
-    return this.board[x][y] !== undefined;
+    return this.board[x][y] !== null;
   }
 
   isWithinBounds(coords) {
@@ -255,31 +259,24 @@ class Board {
 
     return null; // No path found
   }
-  moveSprite(sprite, startX, startY, endX, endY, speed) {
+  moveSprite(sprite, startX, startY, endX, endY, speed = 0.1) {
     sprite = sprite.animate.animatedSprite.idle;
-    const dx = endX - startX;
-    const dy = endY - startY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const frames = distance / speed;
-    let currentFrame = 0;
+    const dx = (endX - startX) * 64;
+    const dy = (endY - startY) * 64;
 
-    const animate = () => {
-      currentFrame++;
-      if (currentFrame <= frames) {
-        const x = startX + dx * (currentFrame / frames);
-        const y = startY + dy * (currentFrame / frames);
-        sprite.x = x;
-        sprite.y = y;
-        this.ticker.add(animate);
+    const yDistance = Math.abs(endY * 64);
+    const xDistance = Math.abs(endX * 64);
+    this.app.ticker.add(() => {
+      console.log("x and XDistance", sprite.x, xDistance);
+      if (sprite.x !== xDistance) {
+        const xSpeed = speed;
+        const xDirection = dy > 0 ? 1 : -1;
+        sprite.x += ySpeed * yDirection;
+        dx -= ySpeed;
       } else {
-        sprite.x = endX;
-        sprite.y = endY;
-        this.ticker.stop();
+        this.app.ticker.remove(this);
       }
-    };
-
-    this.ticker.start();
-    animate();
+    });
   }
   getAdjacentTiles(x, y) {
     console.log(x, y);
@@ -298,23 +295,21 @@ class Board {
     }
     return adjacentTiles;
   }
-  getAdjacentPokemon(pokemon) {
-    if (!pokemon) {
-      return null;
-    }
-    if (!pokemon.tile) {
-      return null;
-    }
-
-    const adjacentTiles = this.getAdjacentTiles(pokemon.tile.x, pokemon.tile.y);
-
+  getAdjacentPokemons(pokemon) {
+    const { x, y } = { x: pokemon.tile.x, y: pokemon.tile.y };
+    const adjacentTiles = this.getAdjacentTiles(x, y);
+    const adjacentPokemons = [];
     for (const tile of adjacentTiles) {
-      const tilePokemon = this.getPokemonAt({ x: tile.x, y: tile.y });
-      if (tilePokemon && tilePokemon.player !== pokemon.player) {
-        return tilePokemon;
+      const pokemon = this.getPokemonAt(tile);
+      if (
+        pokemon !== null &&
+        pokemon.isAlive &&
+        pokemon !== this.selectedPokemon
+      ) {
+        adjacentPokemons.push(pokemon);
       }
     }
-    return null;
+    return adjacentPokemons;
   }
   getSelectedPokemon() {
     return this.selectedPokemon;

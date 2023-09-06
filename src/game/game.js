@@ -53,7 +53,7 @@ class Game {
     await this.loadLoadingScreen();
     await this.loadMenu();
     this.toggleMenu();
-    requestAnimationFrame(this.gameLoop.bind(this));
+    // requestAnimationFrame(this.gameLoop.bind(this));
   }
 
   async loadLoadingScreen() {
@@ -442,7 +442,7 @@ class Game {
       // End the game
       this.quitGame();
     });
-    git;
+
     endGameButton.y = 50;
     menu.addChild(endGameButton);
   }
@@ -541,19 +541,22 @@ class Game {
       // Iterate over each Pokemon on the board
       const boardArr = this.board.board;
       for (let row = 0; row < boardArr[0].length; row++) {
-        for (let col = 0; col < boardArr[row].length; col++) {
-          const pokemon = boardArr[row][col];
+        for (let col = 0; col < boardArr.length; col++) {
+          const pokemon = boardArr[col][row];
 
           // check if pokemon is undefined
-          if (pokemon === undefined) {
+          if (pokemon === null) {
             continue;
           }
-          if (pokemon.isFight) {
+          if (pokemon.isFight === true) {
             continue;
           }
 
           // Check if the Pokemon is adjacent to any Pokemon from the opposing player
-          const adjacentPokemon = this.board.getAdjacentPokemon(pokemon);
+          const adjacentPokemon = this.board.getAdjacentPokemons(pokemon);
+          if (!adjacentPokemon) {
+            continue;
+          }
           if (adjacentPokemon.isFight) {
             continue;
           }
